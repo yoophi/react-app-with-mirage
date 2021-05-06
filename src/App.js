@@ -23,11 +23,18 @@ createServer({
         ],
       };
     });
+    this.get("/httpbin/:id", (schema, request) => {
+      return {
+        params: request.params.id,
+        queryString: request.queryParams,
+      };
+    });
   },
 });
 export function App() {
   let [users, setUsers] = useState([]);
   let [movies, setMovies] = useState([]);
+  let [httpData, setHttpData] = useState({});
 
   useEffect(() => {
     fetch("/api/users")
@@ -35,7 +42,10 @@ export function App() {
       .then((json) => setUsers(json));
     fetch("/api/movies")
       .then((response) => response.json())
-      .then((json) => setMovies(json.movies));
+      .then((json) => setMovies(json));
+    fetch("/api/httpbin/42?foo=bar&hello=world")
+      .then((response) => response.json())
+      .then((json) => setHttpData(json));
   }, []);
 
   return (
@@ -47,11 +57,9 @@ export function App() {
         ))}
       </ul>
       <h3>Movies</h3>
-      <ul>
-        {movies.map((movie) => (
-          <li key={movie.id}>{movie.name}</li>
-        ))}
-      </ul>
+      <pre>{JSON.stringify(movies, null, 2)}</pre>
+      <h3>Http</h3>
+      <pre>{JSON.stringify(httpData, null, 2)}</pre>
     </>
   );
 }
