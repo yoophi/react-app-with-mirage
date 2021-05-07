@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { createServer, Model } from "miragejs";
+import { Model, createServer } from "miragejs";
+import React, { useEffect, useState } from "react";
+
 import movies from "./fixtures/movies.json";
 
-function paginate(array, pageNumber, pageSize) {
+function paginate(array: any[], pageNumber: number, pageSize: number) {
   return array.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
 }
 createServer({
@@ -27,17 +28,18 @@ createServer({
         page: pageNumber = 1,
         per_page: pageSize = 10,
       } = request.queryParams;
+      const items = schema.all('movies').models
       return {
-        data: paginate(schema.db.movies, Number(pageNumber), Number(pageSize)),
+        data: paginate(items, Number(pageNumber), Number(pageSize)),
         pagination: {
           page: Number(pageNumber),
           per_page: Number(pageSize),
-          total: schema.db.movies.length,
-          total_page: Math.ceil(schema.db.movies.length / Number(pageSize)),
+          total: items.length,
+          total_page: Math.ceil(items.length / Number(pageSize)),
         },
       };
     });
-    this.get("/httpbin/:id", (schema, request) => {
+    this.get("/httpbin/:id", (_schema, request) => {
       return {
         params: request.params.id,
         queryString: request.queryParams,
@@ -47,7 +49,7 @@ createServer({
 });
 
 export function App() {
-  let [users, setUsers] = useState([]);
+  let [users, setUsers] = useState<any[]>([]);
   let [movies, setMovies] = useState([]);
   let [httpData, setHttpData] = useState({});
 
